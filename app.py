@@ -1,11 +1,13 @@
-from flask import Flask, render_template, request
+from datetime import datetime
+
+from flask import Flask, render_template, request, flash
 from flask_sqlalchemy import SQLAlchemy
 
 #flask instance
 app = Flask(__name__)
 
 #default
-app.config["SECRET_KEYS"] = "myapplication123"
+app.config["SECRET_KEY"] = "myapplication123"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
 
 #database instance
@@ -28,7 +30,15 @@ def index():
         last_name = request.form["last_name"]
         email = request.form["email"]
         date = request.form["date"]
+        og_date = datetime.strptime(date, "%Y-%m-%d")
         occupation = request.form["occupation"]
+
+        form = Form(first_name=first_name, last_name=last_name,
+                    email=email,date= og_date, occupation=occupation)
+        db.session.add(form)
+        db.session.commit()
+        #message
+        flash(f"{first_name},Your form was submitted successfully!", "success")
 
 
     return render_template("index.html")
